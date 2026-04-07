@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>US Constitution — Reading Comprehension · English-LK</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: system-ui, -apple-system, Arial, sans-serif; background: #f5f5f0; color: #1a1a18; line-height: 1.6; }
+  .page { max-width: 860px; margin: 0 auto; padding: 32px 24px 60px; }
+
+  /* Header */
+  .header { border-bottom: 2px solid #185FA5; padding-bottom: 12px; margin-bottom: 24px; display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 8px; }
+  .header h1 { font-size: 20px; font-weight: 600; color: #111; }
+  .header p { font-size: 12px; color: #666; margin-top: 2px; }
+  .header-right { font-size: 12px; color: #666; text-align: right; line-height: 1.6; }
+
+  /* Timer */
+  .timer-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; padding: 10px 14px; background: #fff; border: 1px solid #ddd; border-radius: 10px; }
+  .timer-bar label { font-size: 13px; color: #555; }
+  #timer { font-size: 16px; font-weight: 600; color: #185FA5; min-width: 56px; }
+  .prog-outer { flex: 1; height: 7px; background: #e0e0e0; border-radius: 4px; overflow: hidden; }
+  .prog-inner { height: 100%; background: #185FA5; border-radius: 4px; transition: width 1s linear; }
+  .start-btn { padding: 6px 16px; font-size: 13px; background: #185FA5; color: #fff; border: none; border-radius: 7px; cursor: pointer; font-family: inherit; }
+  .start-btn:hover { background: #0C447C; }
+  .start-btn:disabled { background: #aaa; cursor: default; }
+
+  /* Section labels */
+  .section-label { font-size: 11px; font-weight: 600; color: #888; letter-spacing: .07em; text-transform: uppercase; margin: 22px 0 8px; }
+
+  /* Task cards */
+  .card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 18px 20px; margin-bottom: 14px; }
+  .card-head { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 12px; }
+  .badge { background: #E6F1FB; color: #0C447C; font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+  .skill { background: #f0f0ec; color: #666; font-size: 11px; padding: 3px 9px; border-radius: 20px; }
+  .card-title { font-size: 14px; font-weight: 600; flex: 1; color: #111; }
+  .card-body { font-size: 13.5px; color: #333; }
+  .card-body p { margin-bottom: 8px; }
+  em { color: #185FA5; font-style: italic; }
+
+  /* MC */
+  .mc-opt { display: flex; align-items: flex-start; gap: 9px; padding: 8px 11px; margin: 5px 0; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; font-size: 13px; transition: background .15s; }
+  .mc-opt:hover { background: #f5f5f0; }
+  .mc-opt.correct { background: #EAF3DE; border-color: #639922; color: #1a4a08; }
+  .mc-opt.wrong   { background: #FCEBEB; border-color: #E24B4A; color: #501313; }
+  .mc-opt input { margin-top: 2px; flex-shrink: 0; }
+  .check-btn { margin-top: 10px; padding: 6px 14px; font-size: 13px; background: #fff; border: 1px solid #ccc; border-radius: 7px; cursor: pointer; font-family: inherit; transition: background .15s; }
+  .check-btn:hover { background: #f0f0ec; }
+
+  /* Feedback */
+  .fb { margin-top: 8px; font-size: 12px; padding: 7px 10px; border-radius: 6px; display: none; }
+  .fb.show { display: block; }
+  .fb.ok  { background: #EAF3DE; color: #1a4a08; }
+  .fb.bad { background: #FCEBEB; color: #501313; }
+
+  /* Match */
+  .match-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .match-col { display: flex; flex-direction: column; gap: 5px; }
+  .col-lbl { font-size: 11px; font-weight: 600; color: #888; margin-bottom: 2px; }
+  .mitem { padding: 7px 11px; font-size: 13px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: all .15s; line-height: 1.4; background: #fff; }
+  .mitem:hover { background: #f5f5f0; }
+  .mitem.sel     { background: #E6F1FB; border-color: #185FA5; color: #0C447C; }
+  .mitem.matched { background: #EAF3DE; border-color: #639922; color: #1a4a08; cursor: default; }
+  .mitem.bad-m   { background: #FCEBEB; border-color: #E24B4A; }
+
+  /* Textarea */
+  .ans { width: 100%; margin-top: 8px; padding: 9px 11px; border: 1px solid #ccc; border-radius: 8px; background: #fafaf8; font-size: 13px; font-family: inherit; resize: vertical; line-height: 1.55; color: #111; }
+  .ans:focus { outline: none; border-color: #185FA5; background: #fff; }
+  .wc { font-size: 11px; color: #888; margin-top: 4px; }
+
+  /* Product reveal */
+  .reveal-btn { display: none; width: 100%; margin-top: 10px; padding: 12px; background: #185FA5; color: #fff; border: none; border-radius: 10px; font-size: 15px; font-family: inherit; cursor: pointer; transition: background .15s; }
+  .reveal-btn:hover { background: #0C447C; }
+  .reveal-btn.show { display: block; }
+
+  /* Product */
+  .product { display: none; margin-top: 8px; border-top: 2px solid #185FA5; padding-top: 24px; }
+  .product.visible { display: block; }
+  .prod-title { font-size: 18px; font-weight: 600; color: #111; }
+  .prod-sub { font-size: 12px; color: #666; margin-top: 2px; margin-bottom: 18px; }
+
+  .branch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  @media (max-width: 600px) { .branch-grid { grid-template-columns: 1fr; } .match-grid { grid-template-columns: 1fr; } }
+  .branch-card { background: #fff; border: 1px solid #ddd; border-radius: 12px; padding: 16px; }
+  .branch-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; align-items: center; gap: 7px; }
+  .bicon { width: 22px; height: 22px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; }
+  .bicon.l { background: #E6F1FB; color: #185FA5; }
+  .bicon.e { background: #FAEEDA; color: #854F0B; }
+  .bicon.j { background: #E1F5EE; color: #0F6E56; }
+  .plist { list-style: none; font-size: 12px; color: #444; line-height: 1.9; }
+  .plist li::before { content: "→ "; color: #185FA5; }
+  .branch-note { margin-top: 10px; padding: 6px 9px; background: #f5f5f0; border-radius: 6px; font-size: 11px; color: #666; }
+
+  /* SVG checks */
+  .checks-wrap { margin-top: 18px; }
+  .checks-lbl { font-size: 12px; font-weight: 600; color: #666; margin-bottom: 8px; }
+  svg.checks { width: 100%; background: #fff; border: 1px solid #ddd; border-radius: 10px; padding: 8px; }
+
+  /* Preamble goals */
+  .preamble-strip { margin-top: 14px; padding: 11px 14px; background: #f5f5f0; border-radius: 8px; font-size: 12px; color: #555; line-height: 1.8; }
+  .preamble-strip strong { color: #111; }
+
+  @media print {
+    body { background: #fff; }
+    .timer-bar, .start-btn, .reveal-btn { display: none !important; }
+    .product { display: block !important; }
+    .card { break-inside: avoid; border: 1px solid #bbb; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>The US Constitution — Reading Comprehension</h1>
+      <p>English-LK &nbsp;·&nbsp; Mr Stephan &nbsp;·&nbsp; B1+ → C1 preparation &nbsp;·&nbsp; Q1.1 2025–26</p>
+    </div>
+    <div class="header-right"><strong>30 min</strong> working time<br>5 tasks · produces a summary infographic</div>
+  </div>
+
+  <!-- Timer -->
+  <div class="timer-bar">
+    <label>Time remaining</label>
+    <span id="timer">30:00</span>
+    <div class="prog-outer"><div class="prog-inner" id="prog" style="width:100%"></div></div>
+    <button class="start-btn" id="startBtn" onclick="startTimer()">Start</button>
+  </div>
+
+  <!-- Task 1 -->
+  <div class="section-label">Task 1 — Comprehension (multiple choice) · ~5 min</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="badge">1</span>
+      <span class="card-title">Select the correct answer for each question.</span>
+      <span class="skill">reading for detail</span>
+    </div>
+    <div class="card-body">
+      <p><strong>1a.</strong> According to Article I, how many senators does each state send to Congress?</p>
+      <div class="mc-opt" onclick="pickMC(this,'q1','correct')"><input type="radio" name="q1"> Two senators, each serving a six-year term.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q1','wrong')"><input type="radio" name="q1"> One senator per one million inhabitants.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q1','wrong')"><input type="radio" name="q1"> Three senators, renewable every four years.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q1','wrong')"><input type="radio" name="q1"> A number proportional to the state's population.</div>
+      <div class="fb" id="fb-q1"></div>
+
+      <p style="margin-top:14px"><strong>1b.</strong> Which house of Congress has the "sole Power of Impeachment"?</p>
+      <div class="mc-opt" onclick="pickMC(this,'q2','wrong')"><input type="radio" name="q2"> The Senate.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q2','correct')"><input type="radio" name="q2"> The House of Representatives.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q2','wrong')"><input type="radio" name="q2"> The Supreme Court.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q2','wrong')"><input type="radio" name="q2"> A joint committee of both houses.</div>
+      <div class="fb" id="fb-q2"></div>
+
+      <p style="margin-top:14px"><strong>1c.</strong> What minimum age is required to become President of the United States?</p>
+      <div class="mc-opt" onclick="pickMC(this,'q3','wrong')"><input type="radio" name="q3"> 21 years old.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q3','wrong')"><input type="radio" name="q3"> 25 years old.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q3','wrong')"><input type="radio" name="q3"> 30 years old.</div>
+      <div class="mc-opt" onclick="pickMC(this,'q3','correct')"><input type="radio" name="q3"> 35 years old.</div>
+      <div class="fb" id="fb-q3"></div>
+
+      <button class="check-btn" onclick="checkMC()">Check answers</button>
+    </div>
+  </div>
+
+  <!-- Task 2 -->
+  <div class="section-label">Task 2 — Vocabulary in context · ~5 min</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="badge">2</span>
+      <span class="card-title">Match each word from the text to its meaning. Click a word, then its definition.</span>
+      <span class="skill">vocabulary</span>
+    </div>
+    <div class="card-body">
+      <div class="match-grid">
+        <div class="match-col">
+          <div class="col-lbl">Word from the text</div>
+          <div class="mitem" id="w-ratify"    onclick="selWord('ratify')">ratify</div>
+          <div class="mitem" id="w-vested"    onclick="selWord('vested')">vested</div>
+          <div class="mitem" id="w-quorum"    onclick="selWord('quorum')">quorum</div>
+          <div class="mitem" id="w-emolument" onclick="selWord('emolument')">emolument</div>
+          <div class="mitem" id="w-reprisal"  onclick="selWord('reprisal')">reprisal</div>
+        </div>
+        <div class="match-col">
+          <div class="col-lbl">Meaning</div>
+          <div class="mitem" id="d-ratify"    onclick="selDef('ratify')">to formally approve or confirm</div>
+          <div class="mitem" id="d-quorum"    onclick="selDef('quorum')">minimum number needed to conduct business</div>
+          <div class="mitem" id="d-emolument" onclick="selDef('emolument')">payment or benefit from a position or office</div>
+          <div class="mitem" id="d-vested"    onclick="selDef('vested')">officially placed or granted (power/authority)</div>
+          <div class="mitem" id="d-reprisal"  onclick="selDef('reprisal')">retaliatory act against an enemy</div>
+        </div>
+      </div>
+      <div class="fb" id="fb-match"></div>
+    </div>
+  </div>
+
+  <!-- Task 3 -->
+  <div class="section-label">Task 3 — Inferencing &amp; analysis · ~8 min</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="badge">3</span>
+      <span class="card-title">Answer the following questions in 2–4 sentences. Use evidence from the text.</span>
+      <span class="skill">critical thinking</span>
+    </div>
+    <div class="card-body">
+      <p><strong>3a.</strong> Why do you think the Framers separated legislative, executive, and judicial power into three distinct branches rather than concentrating it in one body?</p>
+      <textarea class="ans" rows="3" placeholder="Write your answer here…"></textarea>
+
+      <p style="margin-top:12px"><strong>3b.</strong> Article I, Section 9 lists things Congress is <em>forbidden</em> to do. What does this tell us about the Framers' priorities? Give at least one specific example from the text.</p>
+      <textarea class="ans" rows="3" placeholder="Write your answer here…"></textarea>
+
+      <p style="margin-top:12px"><strong>3c.</strong> The Preamble uses phrases like "domestic Tranquility" and "general Welfare". In your own words, what vision of government do these phrases suggest?</p>
+      <textarea class="ans" rows="3" placeholder="Write your answer here…"></textarea>
+    </div>
+  </div>
+
+  <!-- Task 4 -->
+  <div class="section-label">Task 4 — Language focus (formal register) · ~5 min</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="badge">4</span>
+      <span class="card-title">Rewrite each archaic or formal phrase in modern English without changing the meaning.</span>
+      <span class="skill">register · paraphrase</span>
+    </div>
+    <div class="card-body">
+      <p><strong>4a.</strong> <em>"…do ordain and establish this Constitution…"</em></p>
+      <textarea class="ans" rows="2" placeholder="Modern English version…"></textarea>
+
+      <p style="margin-top:10px"><strong>4b.</strong> <em>"…unless they be equally divided."</em></p>
+      <textarea class="ans" rows="2" placeholder="Modern English version…"></textarea>
+
+      <p style="margin-top:10px"><strong>4c.</strong> <em>"…no Attainder of Treason shall work Corruption of Blood…"</em></p>
+      <textarea class="ans" rows="2" placeholder="Modern English version…"></textarea>
+    </div>
+  </div>
+
+  <!-- Task 5 -->
+  <div class="section-label">Task 5 — Extended writing · ~7 min</div>
+  <div class="card">
+    <div class="card-head">
+      <span class="badge">5</span>
+      <span class="card-title">Choose one prompt and write a short paragraph (80–100 words, C1 target).</span>
+      <span class="skill">argumentation · cohesion</span>
+    </div>
+    <div class="card-body">
+      <p><strong>Option A:</strong> "The system of checks and balances described in the Constitution is as relevant today as it was in 1787." Do you agree? Support your view.</p>
+      <p style="margin-top:6px"><strong>Option B:</strong> To what extent does the language of the Preamble reflect an idealistic rather than realistic view of government?</p>
+      <textarea class="ans" rows="5" placeholder="Your paragraph here (aim for 80–100 words)…" oninput="countWords(this)"></textarea>
+      <div class="wc" id="wc">Word count: 0</div>
+    </div>
+  </div>
+
+  <!-- Reveal button -->
+  <button class="reveal-btn" id="revealBtn" onclick="showProduct()">✓ Finished? Reveal your summary infographic</button>
+
+  <!-- Product -->
+  <div class="product" id="product">
+    <div class="prod-title">The US Constitution at a Glance</div>
+    <div class="prod-sub">Your visual summary — the three branches and their powers</div>
+
+    <div class="branch-grid">
+      <div class="branch-card">
+        <h3><span class="bicon l">L</span> Legislative Branch</h3>
+        <div style="font-size:11px;color:#888;margin-bottom:8px">Article I · Congress</div>
+        <ul class="plist">
+          <li>House of Representatives &amp; Senate</li>
+          <li>Makes laws</li>
+          <li>Levies taxes &amp; controls spending</li>
+          <li>Declares war</li>
+          <li>Sole power of impeachment (House)</li>
+          <li>Tries impeachment cases (Senate)</li>
+        </ul>
+        <div class="branch-note">Rep: min. 25 yrs &nbsp;·&nbsp; Senator: min. 30 yrs</div>
+      </div>
+      <div class="branch-card">
+        <h3><span class="bicon e">E</span> Executive Branch</h3>
+        <div style="font-size:11px;color:#888;margin-bottom:8px">Article II · President</div>
+        <ul class="plist">
+          <li>Carries out laws</li>
+          <li>Commander in Chief</li>
+          <li>Signs or vetoes bills</li>
+          <li>Appoints judges &amp; ministers</li>
+          <li>Negotiates treaties</li>
+          <li>Gives State of the Union address</li>
+        </ul>
+        <div class="branch-note">Min. 35 yrs &nbsp;·&nbsp; natural-born citizen &nbsp;·&nbsp; 4-year term</div>
+      </div>
+      <div class="branch-card">
+        <h3><span class="bicon j">J</span> Judicial Branch</h3>
+        <div style="font-size:11px;color:#888;margin-bottom:8px">Article III · Supreme Court</div>
+        <ul class="plist">
+          <li>Interprets the law</li>
+          <li>Hears constitutional cases</li>
+          <li>Original jurisdiction over states</li>
+          <li>Trial by jury guaranteed</li>
+          <li>Judges serve during "good behaviour"</li>
+          <li>Defines &amp; punishes treason</li>
+        </ul>
+        <div class="branch-note">Appointed by President, confirmed by Senate</div>
+      </div>
+    </div>
+
+    <div class="checks-wrap">
+      <div class="checks-lbl">Checks &amp; Balances — how each branch limits the others</div>
+      <svg class="checks" viewBox="0 0 680 230">
+        <defs>
+          <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+            <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </marker>
+        </defs>
+        <!-- Congress -->
+        <rect x="30" y="80" width="160" height="60" rx="10" fill="#E6F1FB" stroke="#185FA5" stroke-width="1"/>
+        <text x="110" y="107" text-anchor="middle" font-size="14" font-weight="600" fill="#0C447C" font-family="system-ui,Arial">Congress</text>
+        <text x="110" y="125" text-anchor="middle" font-size="12" fill="#185FA5" font-family="system-ui,Arial">Legislative</text>
+        <!-- President -->
+        <rect x="260" y="18" width="160" height="60" rx="10" fill="#FAEEDA" stroke="#B07010" stroke-width="1"/>
+        <text x="340" y="45" text-anchor="middle" font-size="14" font-weight="600" fill="#854F0B" font-family="system-ui,Arial">President</text>
+        <text x="340" y="63" text-anchor="middle" font-size="12" fill="#B07010" font-family="system-ui,Arial">Executive</text>
+        <!-- Court -->
+        <rect x="490" y="80" width="160" height="60" rx="10" fill="#E1F5EE" stroke="#0F6E56" stroke-width="1"/>
+        <text x="570" y="107" text-anchor="middle" font-size="13" font-weight="600" fill="#085041" font-family="system-ui,Arial">Supreme Court</text>
+        <text x="570" y="125" text-anchor="middle" font-size="12" fill="#0F6E56" font-family="system-ui,Arial">Judicial</text>
+        <!-- Congress → President: override veto -->
+        <path d="M190 94 Q225 58 260 52" fill="none" stroke="#B07010" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="208" y="60" text-anchor="middle" font-size="11" fill="#B07010" font-family="system-ui,Arial">override veto</text>
+        <!-- President → Congress: veto -->
+        <path d="M260 74 Q224 102 190 116" fill="none" stroke="#185FA5" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="213" y="112" text-anchor="middle" font-size="11" fill="#185FA5" font-family="system-ui,Arial">veto bills</text>
+        <!-- President → Court: appoints -->
+        <path d="M420 48 Q458 48 490 94" fill="none" stroke="#0F6E56" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="472" y="57" text-anchor="middle" font-size="11" fill="#0F6E56" font-family="system-ui,Arial">appoints</text>
+        <!-- Court → President: limits -->
+        <path d="M490 116 Q455 116 420 68" fill="none" stroke="#B07010" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="466" y="110" text-anchor="middle" font-size="11" fill="#B07010" font-family="system-ui,Arial">limits power</text>
+        <!-- Congress → Court: impeach -->
+        <path d="M190 132 Q340 196 490 132" fill="none" stroke="#0F6E56" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="340" y="194" text-anchor="middle" font-size="11" fill="#0F6E56" font-family="system-ui,Arial">can impeach judges (House + Senate)</text>
+        <!-- Court → Congress: strike laws -->
+        <path d="M490 148 Q340 178 190 148" fill="none" stroke="#185FA5" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+        <text x="340" y="172" text-anchor="middle" font-size="11" fill="#185FA5" font-family="system-ui,Arial">can strike down laws</text>
+      </svg>
+    </div>
+
+    <div class="preamble-strip">
+      <strong>Preamble goals:</strong> &nbsp;
+      form a more perfect Union &nbsp;·&nbsp;
+      establish Justice &nbsp;·&nbsp;
+      ensure domestic Tranquility &nbsp;·&nbsp;
+      provide for common defence &nbsp;·&nbsp;
+      promote general Welfare &nbsp;·&nbsp;
+      secure the Blessings of Liberty
+    </div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+  /* Timer */
+  var totalSecs = 30*60, elapsed = 0, timerInterval;
+  function startTimer() {
+    var btn = document.getElementById('startBtn');
+    btn.textContent = 'Running…'; btn.disabled = true;
+    document.getElementById('revealBtn').classList.add('show');
+    timerInterval = setInterval(function(){
+      elapsed++;
+      var rem = Math.max(0, totalSecs - elapsed);
+      var m = Math.floor(rem/60), s = rem%60;
+      document.getElementById('timer').textContent =
+        (m<10?'0':'')+m+':'+(s<10?'0':'')+s;
+      document.getElementById('prog').style.width = (rem/totalSecs*100)+'%';
+      if (rem === 0) clearInterval(timerInterval);
+    }, 1000);
+  }
+
+  /* Multiple Choice */
+  var answered = {};
+  function pickMC(el, q, result) {
+    if (answered[q]) return;
+    var opts = document.querySelectorAll('[onclick*="\''+q+'\'"]');
+    opts.forEach(function(o){ o.classList.remove('correct','wrong'); o.querySelector('input').disabled=true; });
+    el.classList.add(result==='correct'?'correct':'wrong');
+    el.querySelector('input').checked = true;
+    answered[q] = result;
+    var fb = document.getElementById('fb-'+q);
+    fb.textContent = result==='correct'
+      ? '✓ Correct!'
+      : '✗ Not quite — re-read the relevant section.';
+    fb.className = 'fb show '+(result==='correct'?'ok':'bad');
+  }
+  function checkMC() {
+    ['q1','q2','q3'].forEach(function(q){
+      if (!answered[q]) {
+        var fb = document.getElementById('fb-'+q);
+        fb.textContent = 'Please select an answer.';
+        fb.className = 'fb show bad';
+      }
+    });
+  }
+
+  /* Matching */
+  var selW = null, selD = null;
+  function selWord(w) {
+    var el = document.getElementById('w-'+w);
+    if (el.classList.contains('matched')) return;
+    if (selW) document.getElementById('w-'+selW).classList.remove('sel');
+    selW = w; el.classList.add('sel'); tryMatch();
+  }
+  function selDef(d) {
+    var el = document.getElementById('d-'+d);
+    if (el.classList.contains('matched')) return;
+    if (selD) document.getElementById('d-'+selD).classList.remove('sel');
+    selD = d; el.classList.add('sel'); tryMatch();
+  }
+  function tryMatch() {
+    if (!selW || !selD) return;
+    var fb = document.getElementById('fb-match');
+    if (selW === selD) {
+      document.getElementById('w-'+selW).className = 'mitem matched';
+      document.getElementById('d-'+selD).className = 'mitem matched';
+      fb.textContent = '✓ Correct match!'; fb.className = 'fb show ok';
+    } else {
+      var we = document.getElementById('w-'+selW), de = document.getElementById('d-'+selD);
+      we.classList.add('bad-m'); de.classList.add('bad-m');
+      fb.textContent = 'Not a match — try again.'; fb.className = 'fb show bad';
+      setTimeout(function(){
+        we.classList.remove('sel','bad-m'); de.classList.remove('sel','bad-m');
+      }, 700);
+    }
+    selW = null; selD = null;
+  }
+
+  /* Word count */
+  function countWords(ta) {
+    var w = ta.value.trim().split(/\s+/).filter(function(x){return x.length>0;}).length;
+    var msg = 'Word count: '+w;
+    if (w>=80&&w<=100) msg += ' ✓ (target reached)';
+    else if (w>100) msg += ' (slightly over target)';
+    document.getElementById('wc').textContent = msg;
+  }
+
+  /* Reveal */
+  function showProduct() {
+    document.getElementById('product').classList.add('visible');
+    document.getElementById('revealBtn').style.display = 'none';
+    document.getElementById('product').scrollIntoView({behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
